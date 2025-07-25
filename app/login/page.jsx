@@ -36,7 +36,7 @@ export default function LoginPage() {
 
     if (!validateForm()) return;
 
-    const res = await fetch("/api/login", {
+    const res = await fetch("http://192.168.0.249/auth/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
