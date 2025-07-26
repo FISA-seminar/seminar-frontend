@@ -36,7 +36,7 @@ export default function LoginPage() {
 
     if (!validateForm()) return;
 
-    const res = await fetch("http://172.27.94.48/auth/", {
+    const res = await fetch("/auth/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -45,7 +45,8 @@ export default function LoginPage() {
 
     if (res.ok) {
       const { serviceUrl } = await res.json();
-      router.push(serviceUrl);
+    //   router.push(serviceUrl);
+        window.location.href = serviceUrl;
     } else {
       alert("로그인 실패");
     }
