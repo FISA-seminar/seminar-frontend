@@ -31,26 +31,34 @@ export default function LoginPage() {
     return valid;
   };
 
+  const [serverError, setServerError] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    const res = await fetch("/auth/", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("/auth/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (res.ok) {
-      const { serviceUrl } = await res.json();
-    //   router.push(serviceUrl);
+      if (res.ok) {
+        const { token, serviceUrl } = await res.json();
+        localStorage.setItem("token", token); 
         window.location.href = serviceUrl;
-    } else {
-      alert("로그인 실패");
+
+      } else {
+        const data = await res.json();
+        setServerError(data.error || "로그인 실패");
+      }
+    } catch (err) {
+      setServerError("서버와 통신 중 오류가 발생했습니다.");
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -91,6 +99,10 @@ export default function LoginPage() {
           >
             로그인
           </button>
+          {serverError && (
+            <p className="text-red-500 text-sm text-center mt-2">{serverError}</p>
+          )}
+
         </form>
       </div>
     </div>
