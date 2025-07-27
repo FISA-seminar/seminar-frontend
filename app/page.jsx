@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -8,8 +8,17 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [serverError, setServerError] = useState("");
   const router = useRouter();
 
+  //토큰 있을 시 /service 페이지로 바로이동
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      window.location.href = "/service";
+    }
+  }, []);
+//유효성검사
   const validateForm = () => {
     let valid = true;
 
@@ -30,9 +39,7 @@ export default function LoginPage() {
 
     return valid;
   };
-
-  const [serverError, setServerError] = useState("");
-
+  //로그인 정보 전송
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -47,9 +54,8 @@ export default function LoginPage() {
 
       if (res.ok) {
         const { token, serviceUrl } = await res.json();
-        localStorage.setItem("token", token); 
+        localStorage.setItem("token", token);
         window.location.href = serviceUrl;
-
       } else {
         const data = await res.json();
         setServerError(data.error || "로그인 실패");
@@ -58,7 +64,6 @@ export default function LoginPage() {
       setServerError("서버와 통신 중 오류가 발생했습니다.");
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -102,7 +107,6 @@ export default function LoginPage() {
           {serverError && (
             <p className="text-red-500 text-sm text-center mt-2">{serverError}</p>
           )}
-
         </form>
       </div>
     </div>
